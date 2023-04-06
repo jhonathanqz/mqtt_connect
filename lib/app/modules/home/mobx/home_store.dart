@@ -38,10 +38,22 @@ abstract class _HomeStoreBase with Store implements Disposable {
       connection = connection.copyWith(clientIdentifier: value);
 
   @observable
-  int loop = 15;
+  String sendMessage = '';
 
   @action
-  void setLoop(String value) => loop = int.tryParse(value) ?? 0;
+  void setLoop(String value) => sendMessage = value;
+
+  @action
+  void setSubtopic1(String value) =>
+      connection = connection.copyWith(subtopic1: value);
+
+  @action
+  void setSubtopic2(String value) =>
+      connection = connection.copyWith(subtopic2: value);
+
+  @action
+  void setSubtopic3(String value) =>
+      connection = connection.copyWith(subtopic3: value);
 
   @observable
   bool isSendActive = false;
@@ -98,10 +110,14 @@ abstract class _HomeStoreBase with Store implements Disposable {
       _disconnect();
     }
 
-    subscription = client?.updates?.listen(_onMessage);
     _subscribeToTopic(connection.topic);
+    subscription = client?.updates?.listen(_onMessage);
+
     isLoading = false;
   }
+
+  @action
+  void disconnectMqqt() => _disconnect();
 
   /*
   Desconecta do servidor MQTT
@@ -121,6 +137,7 @@ abstract class _HomeStoreBase with Store implements Disposable {
     client = null;
     subscription?.cancel();
     subscription = null;
+    isConnection = false;
     print('*******[MQTT client] MQTT client disconnected');
   }
 
@@ -141,7 +158,7 @@ abstract class _HomeStoreBase with Store implements Disposable {
     print("*******[MQTT client] message with message: ${message}");
     print('******MESSAGE_CONVERT: $message');
     print('******TESTE_CONVERT: $messageString');
-    result = messageString;
+    result = message;
   }
 
   /*
@@ -151,18 +168,30 @@ abstract class _HomeStoreBase with Store implements Disposable {
     if (connectionState == MqttConnectionState.connected) {
       print('*******[MQTT client] Subscribing topic: ${topic.trim()}');
       client?.subscribe(topic, MqttQos.exactlyOnce);
+      if (connection.subtopic1 != null) {
+        client?.subscribe(connection.subtopic1!, MqttQos.exactlyOnce);
+      }
+      if (connection.subtopic2 != null) {
+        client?.subscribe(connection.subtopic2!, MqttQos.exactlyOnce);
+      }
+      if (connection.subtopic3 != null) {
+        client?.subscribe(connection.subtopic3!, MqttQos.exactlyOnce);
+      }
+      // client?.subscribe('stat/testtopic/1/RESULT', MqttQos.exactlyOnce);
+      // client?.subscribe('stat/testtopic/1/STATUS11', MqttQos.exactlyOnce);
     }
   }
 
   void testePublish() async {
-    print('**iniciando envio, loop: $loop');
-    for (var i = 1; i <= loop; i++) {
-      isSendActive = true;
-      Uint8Buffer value = Uint8Buffer();
-      value.add(i);
-      client?.publishMessage(connection.topic, MqttQos.exactlyOnce, value);
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
+    print('**iniciando envio, loop: $sendMessage');
+    isSendActive = true;
+    //Uint8Buffer value = Uint8Buffer();
+    //value.add(i);
+    final builder = MqttClientPayloadBuilder();
+    builder.addString(sendMessage);
+    client?.publishMessage(
+        connection.topic, MqttQos.exactlyOnce, builder.payload!);
+    await Future.delayed(const Duration(milliseconds: 500));
     isSendActive = false;
   }
 

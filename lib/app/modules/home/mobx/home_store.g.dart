@@ -65,18 +65,19 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     });
   }
 
-  late final _$loopAtom = Atom(name: '_HomeStoreBase.loop', context: context);
+  late final _$sendMessageAtom =
+      Atom(name: '_HomeStoreBase.sendMessage', context: context);
 
   @override
-  int get loop {
-    _$loopAtom.reportRead();
-    return super.loop;
+  String get sendMessage {
+    _$sendMessageAtom.reportRead();
+    return super.sendMessage;
   }
 
   @override
-  set loop(int value) {
-    _$loopAtom.reportWrite(value, super.loop, () {
-      super.loop = value;
+  set sendMessage(String value) {
+    _$sendMessageAtom.reportWrite(value, super.sendMessage, () {
+      super.sendMessage = value;
     });
   }
 
@@ -179,6 +180,50 @@ mixin _$HomeStore on _HomeStoreBase, Store {
   }
 
   @override
+  void setSubtopic1(String value) {
+    final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
+        name: '_HomeStoreBase.setSubtopic1');
+    try {
+      return super.setSubtopic1(value);
+    } finally {
+      _$_HomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSubtopic2(String value) {
+    final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
+        name: '_HomeStoreBase.setSubtopic2');
+    try {
+      return super.setSubtopic2(value);
+    } finally {
+      _$_HomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setSubtopic3(String value) {
+    final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
+        name: '_HomeStoreBase.setSubtopic3');
+    try {
+      return super.setSubtopic3(value);
+    } finally {
+      _$_HomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void disconnectMqqt() {
+    final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
+        name: '_HomeStoreBase.disconnectMqqt');
+    try {
+      return super.disconnectMqqt();
+    } finally {
+      _$_HomeStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void wipeStore() {
     final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
         name: '_HomeStoreBase.wipeStore');
@@ -195,7 +240,7 @@ mixin _$HomeStore on _HomeStoreBase, Store {
 isLoading: ${isLoading},
 isConnection: ${isConnection},
 connection: ${connection},
-loop: ${loop},
+sendMessage: ${sendMessage},
 isSendActive: ${isSendActive},
 result: ${result},
 settingsValid: ${settingsValid}

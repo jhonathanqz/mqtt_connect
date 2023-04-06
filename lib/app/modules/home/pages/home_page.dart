@@ -22,6 +22,9 @@ class _HomePageState extends State<HomePage> {
   final portController = TextEditingController();
   final topicController = TextEditingController();
   final clientIdentController = TextEditingController();
+  final _subtopic1Controller = TextEditingController();
+  final _subtopic2Controller = TextEditingController();
+  final _subtopic3Controller = TextEditingController();
 
   final HomeStore _controller = Modular.get();
 
@@ -31,6 +34,9 @@ class _HomePageState extends State<HomePage> {
     portController.dispose();
     topicController.dispose();
     clientIdentController.dispose();
+    _subtopic1Controller.dispose();
+    _subtopic2Controller.dispose();
+    _subtopic3Controller.dispose();
     super.dispose();
   }
 
@@ -82,10 +88,30 @@ class _HomePageState extends State<HomePage> {
                     label: 'Identificação cliente',
                   ),
                   AppSpacing.spaceh15,
+                  PrimaryTextField(
+                    controller: _subtopic1Controller,
+                    onChanged: _controller.setSubtopic1,
+                    label: 'Ouvir topico 1',
+                  ),
+                  AppSpacing.spaceh15,
+                  PrimaryTextField(
+                    controller: _subtopic2Controller,
+                    onChanged: _controller.setSubtopic2,
+                    label: 'Ouvir topico 2',
+                  ),
+                  AppSpacing.spaceh15,
+                  PrimaryTextField(
+                    controller: _subtopic3Controller,
+                    onChanged: _controller.setSubtopic3,
+                    label: 'Ouvir topico 3',
+                  ),
+                  AppSpacing.spaceh15,
+                  AppSpacing.spaceh15,
                   ElevatedButton(
                     onPressed: () => _showConnect(),
                     child: const Text('Conectar'),
                   ),
+                  AppSpacing.spaceh15,
                   Visibility(
                     visible: _controller.isConnection,
                     child: ElevatedButton(
@@ -95,6 +121,8 @@ class _HomePageState extends State<HomePage> {
                       child: const Text('Enviar dados'),
                     ),
                   ),
+                  AppSpacing.spaceh15,
+                  AppSpacing.spaceh15,
                 ],
               ),
             ),
@@ -105,6 +133,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showConnect() async {
+    // _controller.isConnection = false;
     if (_controller.isConnection) {
       SnackHelper.showSnackInformation(
           'Você já está conectado', Colors.green, context);
