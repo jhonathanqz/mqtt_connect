@@ -33,22 +33,6 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     });
   }
 
-  late final _$isConnectionAtom =
-      Atom(name: '_HomeStoreBase.isConnection', context: context);
-
-  @override
-  bool get isConnection {
-    _$isConnectionAtom.reportRead();
-    return super.isConnection;
-  }
-
-  @override
-  set isConnection(bool value) {
-    _$isConnectionAtom.reportWrite(value, super.isConnection, () {
-      super.isConnection = value;
-    });
-  }
-
   late final _$connectionAtom =
       Atom(name: '_HomeStoreBase.connection', context: context);
 
@@ -63,62 +47,6 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     _$connectionAtom.reportWrite(value, super.connection, () {
       super.connection = value;
     });
-  }
-
-  late final _$sendMessageAtom =
-      Atom(name: '_HomeStoreBase.sendMessage', context: context);
-
-  @override
-  String get sendMessage {
-    _$sendMessageAtom.reportRead();
-    return super.sendMessage;
-  }
-
-  @override
-  set sendMessage(String value) {
-    _$sendMessageAtom.reportWrite(value, super.sendMessage, () {
-      super.sendMessage = value;
-    });
-  }
-
-  late final _$isSendActiveAtom =
-      Atom(name: '_HomeStoreBase.isSendActive', context: context);
-
-  @override
-  bool get isSendActive {
-    _$isSendActiveAtom.reportRead();
-    return super.isSendActive;
-  }
-
-  @override
-  set isSendActive(bool value) {
-    _$isSendActiveAtom.reportWrite(value, super.isSendActive, () {
-      super.isSendActive = value;
-    });
-  }
-
-  late final _$resultAtom =
-      Atom(name: '_HomeStoreBase.result', context: context);
-
-  @override
-  String get result {
-    _$resultAtom.reportRead();
-    return super.result;
-  }
-
-  @override
-  set result(String value) {
-    _$resultAtom.reportWrite(value, super.result, () {
-      super.result = value;
-    });
-  }
-
-  late final _$connectAsyncAction =
-      AsyncAction('_HomeStoreBase.connect', context: context);
-
-  @override
-  Future<void> connect() {
-    return _$connectAsyncAction.run(() => super.connect());
   }
 
   late final _$_HomeStoreBaseActionController =
@@ -169,17 +97,6 @@ mixin _$HomeStore on _HomeStoreBase, Store {
   }
 
   @override
-  void setLoop(String value) {
-    final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
-        name: '_HomeStoreBase.setLoop');
-    try {
-      return super.setLoop(value);
-    } finally {
-      _$_HomeStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setSubtopic1(String value) {
     final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
         name: '_HomeStoreBase.setSubtopic1');
@@ -213,17 +130,6 @@ mixin _$HomeStore on _HomeStoreBase, Store {
   }
 
   @override
-  void disconnectMqqt() {
-    final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
-        name: '_HomeStoreBase.disconnectMqqt');
-    try {
-      return super.disconnectMqqt();
-    } finally {
-      _$_HomeStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void wipeStore() {
     final _$actionInfo = _$_HomeStoreBaseActionController.startAction(
         name: '_HomeStoreBase.wipeStore');
@@ -238,11 +144,7 @@ mixin _$HomeStore on _HomeStoreBase, Store {
   String toString() {
     return '''
 isLoading: ${isLoading},
-isConnection: ${isConnection},
 connection: ${connection},
-sendMessage: ${sendMessage},
-isSendActive: ${isSendActive},
-result: ${result},
 settingsValid: ${settingsValid}
     ''';
   }
