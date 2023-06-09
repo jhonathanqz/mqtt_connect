@@ -17,9 +17,6 @@ abstract class _HomeStoreBase with Store implements Disposable {
   bool isLoading = false;
 
   @observable
-  bool isConnection = false;
-
-  @observable
   Connection connection = Connection();
 
   @action
@@ -37,14 +34,17 @@ abstract class _HomeStoreBase with Store implements Disposable {
   void setClientIdentifier(String value) =>
       connection = connection.copyWith(clientIdentifier: value);
 
-  @observable
-  int loop = 15;
+  @action
+  void setSubtopic1(String value) =>
+      connection = connection.copyWith(subtopic1: value);
 
   @action
-  void setLoop(String value) => loop = int.tryParse(value) ?? 0;
+  void setSubtopic2(String value) =>
+      connection = connection.copyWith(subtopic2: value);
 
-  @observable
-  bool isSendActive = false;
+  @action
+  void setSubtopic3(String value) =>
+      connection = connection.copyWith(subtopic3: value);
 
   @computed
   bool get settingsValid =>
@@ -53,124 +53,9 @@ abstract class _HomeStoreBase with Store implements Disposable {
       connection.topic.trim() != '' &&
       connection.clientIdentifier.trim() != '';
 
-  @observable
-  String result = '';
-
-  StreamSubscription? subscription;
-
-  mqtt.MqttServerClient? client;
-  MqttConnectionState? connectionState;
-
-  @action
-  Future<void> connect() async {
-    isLoading = true;
-    isConnection = false;
-    client = mqtt.MqttServerClient(connection.broker, '');
-    client?.port = connection.port;
-    client?.logging(on: true);
-    client?.keepAlivePeriod = 30;
-    client?.onDisconnected = _onDisconnected;
-
-    final MqttConnectMessage connMess = MqttConnectMessage()
-        .withClientIdentifier(connection.clientIdentifier)
-        .startClean() // Non persistent session for testing
-        .keepAliveFor(30)
-        .withWillQos(MqttQos.atMostOnce);
-    print('*******[MQTT client] MQTT client connecting....');
-    client?.connectionMessage = connMess;
-
-    try {
-      await client?.connect();
-      print('*****Conectado com sucesso....');
-    } catch (e) {
-      print('*****Erro ao realizar conexão: $e');
-      _disconnect();
-    }
-
-    /// Check if we are connected
-    if (client?.connectionState == MqttConnectionState.connected) {
-      isConnection = true;
-      print('*******[MQTT client] connected');
-      connectionState = client?.connectionState;
-    } else {
-      print('*******[MQTT client] ERROR: MQTT client connection failed - '
-          '*******disconnecting, state is ${client?.connectionState}');
-      _disconnect();
-    }
-
-    subscription = client?.updates?.listen(_onMessage);
-    _subscribeToTopic(connection.topic);
-    isLoading = false;
-  }
-
-  /*
-  Desconecta do servidor MQTT
-   */
-  void _disconnect() {
-    print('*******[MQTT client] _disconnect()');
-    client?.disconnect();
-    _onDisconnected();
-  }
-
-  /*
-  Executa algo quando desconectado, no caso, zera as variáveis e imprime msg no console
-   */
-  void _onDisconnected() {
-    print('*******[MQTT client] _onDisconnected');
-    connectionState = client?.connectionState;
-    client = null;
-    subscription?.cancel();
-    subscription = null;
-    print('*******[MQTT client] MQTT client disconnected');
-  }
-
-  /*
-  Escuta quando mensagens são escritas no tópico. É aqui que lê os dados do servidor MQTT e modifica o valor do termômetro
-   */
-  void _onMessage(List<MqttReceivedMessage> event) {
-    print(event.length);
-    final MqttPublishMessage recMess = event[0].payload as MqttPublishMessage;
-    final messageString =
-        MqttPublishPayload.bytesToString(recMess.payload.message);
-    final String message =
-        MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-    print('*******[MQTT client] MQTT message: topic is <${event[0].topic}>, '
-        '*******payload is <-- ${message} -->');
-    print(client?.connectionState);
-    print("*******[MQTT client] message with topic: ${event[0].topic}");
-    print("*******[MQTT client] message with message: ${message}");
-    print('******MESSAGE_CONVERT: $message');
-    print('******TESTE_CONVERT: $messageString');
-    result = messageString;
-  }
-
-  /*
-  Assina o tópico onde virão os dados de temperatura
-   */
-  void _subscribeToTopic(String topic) {
-    if (connectionState == MqttConnectionState.connected) {
-      print('*******[MQTT client] Subscribing topic: ${topic.trim()}');
-      client?.subscribe(topic, MqttQos.exactlyOnce);
-    }
-  }
-
-  void testePublish() async {
-    print('**iniciando envio, loop: $loop');
-    for (var i = 1; i <= loop; i++) {
-      isSendActive = true;
-      Uint8Buffer value = Uint8Buffer();
-      value.add(i);
-      client?.publishMessage(connection.topic, MqttQos.exactlyOnce, value);
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
-    isSendActive = false;
-  }
-
   @action
   void wipeStore() {
     isLoading = false;
-    isSendActive = false;
-    isConnection = false;
     connection = Connection();
   }
 
